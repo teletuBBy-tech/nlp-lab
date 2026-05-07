@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MAVS</title>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: Arial;
+            padding: 20px;
+            background: linear-gradient(to right, #eef2f3, #dfe9f3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #222;
+        }
+
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0px 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        input, select {
+            padding: 10px;
+            margin: 5px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            width: 250px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .box {
+            background: white;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 12px;
+            box-shadow: 0px 5px 10px rgba(0,0,0,0.1);
+        }
+
+        pre {
+            white-space: pre-wrap;
+        }
+
+        canvas {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>🧠 MAVS - Memory Aware Video Summarizer</h1>
+
+<form method="POST">
+    <input type="text" name="url" placeholder="YouTube URL"><br>
+
+    <select name="style">
+        <option value="quick">Quick Summary</option>
+        <option value="detailed">Detailed Notes</option>
+    </select>
+
+    <select name="memory" id="memorySelect">
+        <option value="forget_fast">Forget Fast</option>
+        <option value="average">Average Memory</option>
+        <option value="strong">Strong Memory</option>
+    </select>
+
+    <h3>Ask from specific time</h3>
+    <input type="text" name="start" placeholder="Start seconds">
+    <input type="text" name="end" placeholder="End seconds"><br>
+    <input type="text" name="question" placeholder="Ask question"><br>
+
+    <button type="submit">Generate</button>
+</form>
+
+{% if summary %}
+<div class="box">
+    <h2>📘 Smart Notes Generated</h2>
+    <pre>{{ summary }}</pre>
+</div>
+{% endif %}
+
+{% if answer %}
+<div class="box">
+    <h2>🤖 AI Tutor Answer</h2>
+    <p>{{ answer }}</p>
+</div>
+{% endif %}
+
+{% if next_time %}
+<div class="box">
+    <h2>⏰ Next Revision Recommendation</h2>
+    <p>{{ next_time }}</p>
+</div>
+{% endif %}
+
+<!-- 🔥 MEMORY GRAPH -->
+<div class="box">
+    <h2>📉 Memory Retention Curve</h2>
+    <canvas id="curveChart"></canvas>
+</div>
+
+<script>
+    const memoryType = "{{ request.form.get('memory', 'average') }}";
+
+    let dataPoints;
+
+    if (memoryType === "forget_fast") {
+        dataPoints = [100, 70, 50, 35, 25, 15];
+    } else if (memoryType === "strong") {
+        dataPoints = [100, 90, 80, 70, 60, 50];
+    } else {
+        dataPoints = [100, 80, 65, 55, 45, 35];
+    }
+
+    const ctx = document.getElementById('curveChart').getContext('2d');
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['0h', '5h', '10h', '15h', '20h', '25h'],
+            datasets: [{
+                label: 'Memory Retention (%)',
+                data: dataPoints,
+                borderWidth: 3,
+                tension: 0.4
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
